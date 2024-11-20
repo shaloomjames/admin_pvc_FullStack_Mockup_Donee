@@ -48,8 +48,8 @@ const createEmployee = async (req, res) => {
 
         if (!employeeName || !nameRegex.test(employeeName)) return res.status(400).json({ err: "Invalid Username. Only letters and spaces are allowed." });
         if (!employeeEmail || !emailRegex.test(employeeEmail)) return res.status(400).json({ err: "Invalid Email Address." });
-        if (!employeeSalary || !numberRegex.test(employeeSalary)) return res.status(400).json({ err: "Invalid Salary. Only Numbers are allowed." });
         if (!employeePassword || !passwordRegex.test(employeePassword)) return res.status(400).json({ err: "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character." });
+        if (!employeeSalary || !numberRegex.test(employeeSalary)) return res.status(400).json({ err: "Invalid Salary. Only Numbers are allowed." });
         if (!employeeRole || !mongoose.Types.ObjectId.isValid(employeeRole)) return res.status(400).json({ err: "Invalid Role ID format." });
 
         const existingUser = await employeeModel.findOne({ employeeEmail });

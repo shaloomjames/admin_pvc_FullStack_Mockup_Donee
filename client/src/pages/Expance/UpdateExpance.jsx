@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2'; // Import SweetAlert2_
 import axios from 'axios';
 import Cookies from 'js-cookie';     
 import { jwtDecode } from 'jwt-decode';  // Correct import for jwt-decode
@@ -17,8 +18,28 @@ const UpdateExpance = () => {
     const [expanceCategoryData, setExpanceCategoryData] = useState([]);
 
     const navigate = useNavigate();
-    const notify = (error) => toast.error(error);
-    const successNotify = (success) => toast.success(success);
+    // const notify = (error) => toast.error(error);
+    // const successNotify = (success) => toast.success(success);
+    
+    const showErrorAlert = (message) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: message,
+            // timer: 2000, // Automatically closes after 2 seconds
+            // showConfirmButton: false,
+        });
+    };
+
+    const showSuccessAlert = (message) => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: message,
+            timer: 2000,
+            showConfirmButton: false,
+        });
+    };
     const { id } = useParams();
 
     
@@ -97,10 +118,10 @@ const UpdateExpance = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            successNotify(res.data.msg);
+            showSuccessAlert(res.data.msg);
             setTimeout(() => navigate("/showexpance"), 4000);
         } catch (error) {
-            notify(error.response?.data?.err || "Failed to update Expance");
+            showErrorAlert(error.response?.data?.err || "Failed to update Expance");
         }
     };
 
@@ -195,7 +216,7 @@ const UpdateExpance = () => {
                     </div>
                 </div>
             </div>
-            <ToastContainer />
+            {/* <ToastContainer /> */}
         </>
     );
 };

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2'; // Import SweetAlert2_
 import Cookies from 'js-cookie';     
 import { jwtDecode } from 'jwt-decode';  // Correct import for jwt-decode
 
@@ -12,8 +13,30 @@ const UpdateExpanceCategory = () => {
     const [ExpanceCategoryStatus, setexpanceCategoryStatus] = useState('');
 
     const navigate = useNavigate();
-    const notify = (error) => toast.error(error);
-    const successNotify = (success) => toast.success(success);
+    // const notify = (error) => toast.error(error);
+    // const successNotify = (success) => toast.success(success);
+
+    
+    const showErrorAlert = (message) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: message,
+            // timer: 2000, // Automatically closes after 2 seconds
+            // showConfirmButton: false,
+        });
+    };
+
+    const showSuccessAlert = (message) => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: message,
+            timer: 2000,
+            showConfirmButton: false,
+        });
+    };
+
     const { id } = useParams();
 
     useEffect(() => {
@@ -60,12 +83,12 @@ const UpdateExpanceCategory = () => {
             };
         try {
             const res = await axios.put(`http://localhost:5000/api/expance/category/${id}`, formData);
-            successNotify(res.data.msg);
+            showSuccessAlert(res.data.msg);
             setTimeout(() => {
                 navigate("/showexpanceCategory");
             }, 4000);
         } catch (error) {
-            notify(error.response?.data?.err || "Failed to update Expance Category");
+            showErrorAlert(error.response?.data?.err || "Failed to update Expance Category");
         }
     };
 
@@ -108,7 +131,7 @@ const UpdateExpanceCategory = () => {
                     </div>
                 </div>
             </div>
-            <ToastContainer />
+            {/* <ToastContainer /> */}
         </>
     );
 };

@@ -58,27 +58,6 @@ const Home = () => {
         }]
     });
 
-    const [financeData, setFinanceData] = useState({
-        labels: ["Savings", "Investments", "Loans"],
-        datasets: [{
-            label: "Finance Allocation",
-            data: [4000, 3000, 1500],
-            backgroundColor: ["#4BC0C0", "#FF6384", "#36A2EB"],
-            borderColor: "black",
-            borderWidth: 1,
-        }]
-    });
-
-    const [expenseDueData, setExpenseDueData] = useState({
-        labels: ["Pending Rent", "Outstanding Bills", "Supplies Due"],
-        datasets: [{
-            label: "Expense Due",
-            data: [300, 100, 50],
-            backgroundColor: ["#FF6384", "#FFCE56", "#36A2EB"],
-            borderColor: "black",
-            borderWidth: 1,
-        }]
-    });
 
     // Fetching Employees Data
     useEffect(() => {
@@ -265,26 +244,7 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
-                <div className="row mb-5">
-                    <div className="col-lg-6 col-sm-6">
-                        <div className="card">
-                            <div className="card-body">
-                                <div className="text-center chart-container">
-                                    <PieChart chartData={financeData} title="Finance Chart" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-lg-6 col-sm-6">
-                        <div className="card">
-                            <div className="card-body">
-                                <div className="text-center chart-container">
-                                    <PieChart chartData={expenseDueData} title="Expense Due Chart" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+         
 
             </div>
 

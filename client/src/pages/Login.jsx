@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';  // Correct import for jwt-decode
 import Cookies from 'js-cookie';     // Corrected to js-cookie
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -15,8 +16,36 @@ const Login = () => {
 
     const navigate = useNavigate();
 
-    const notify = (error) => toast.error(error);
-    const successNotify = (success) => toast.success(success);
+    useEffect(()=>{
+            const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light
+            const body = document.querySelector('body');
+            body.setAttribute('data-theme-version', savedTheme); // Apply theme to body
+    },[])
+
+
+
+    // const notify = (error) => toast.error(error);
+    // const successNotify = (success) => toast.success(success);
+
+    const showErrorAlert = (message) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: message,
+            // timer: 2000, // Automatically closes after 2 seconds
+            // showConfirmButton: false,
+        });
+    };
+
+    const showSuccessAlert = (message) => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: message,
+            timer: 2000,
+            showConfirmButton: false,
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,7 +56,9 @@ const Login = () => {
 
         try {
             const response = await axios.post("http://localhost:5000/api/employee/login", formData);
-            successNotify(response.data.msg);
+            // successNotify(response.data.msg);
+            showSuccessAlert(response.data.msg);
+
 
             const userToken = response.data.token;
             const decodedToken = jwtDecode(userToken); 
@@ -43,9 +74,10 @@ const Login = () => {
 
             setTimeout(() => {
                 navigate("/");
-            }, 4000);
+            }, 2000);
         } catch (error) {
-            notify(error.response?.data?.err || "Failed to Login");
+            // notify(error.response?.data?.err || "Failed to Login");
+            showErrorAlert(error.response?.data?.err || 'Failed to Login');
         }
     };
 
@@ -85,9 +117,6 @@ const Login = () => {
                                                 Log In
                                             </button>
                                         </form>
-                                        <p className="mt-5 login-form__footer">
-                                            Don't have an account? <a href="page-register.html" className="text-primary">Sign Up</a> now
-                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -96,9 +125,10 @@ const Login = () => {
                 </div>
             </div>
            </center>
-            <ToastContainer />
+            {/* <ToastContainer /> */}
         </>
     );
 };
 
 export default Login;
+// Shaloom@12345

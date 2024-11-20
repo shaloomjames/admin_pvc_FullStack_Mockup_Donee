@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
 import Cookies from 'js-cookie';     
 import { jwtDecode } from 'jwt-decode';  // Correct import for jwt-decode
 import axios from 'axios';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 
 const AddExpance = () => {
     const [expanceName, setExpanceName] = useState('');
@@ -17,8 +18,29 @@ const AddExpance = () => {
 
     const navigate = useNavigate();
 
-    const notify = (error) => toast.error(error);
-    const successNotify = (success) => toast.success(success);
+    // const notify = (error) => toast.error(error);
+    // const successNotify = (success) => toast.success(success);
+
+    
+    const showErrorAlert = (message) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: message,
+            // timer: 2000, // Automatically closes after 2 seconds
+            // showConfirmButton: false,
+        });
+    };
+
+    const showSuccessAlert = (message) => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: message,
+            timer: 2000,
+            showConfirmButton: false,
+        });
+    };
 
     useEffect(() => {
 
@@ -99,14 +121,14 @@ const AddExpance = () => {
                 }
             });
 
-            successNotify(response.data.msg);
+            showSuccessAlert(response.data.msg);
 
             // Redirect after 4 seconds
             setTimeout(() => {
                 navigate("/showexpance");
             }, 4000);
         } catch (error) {
-            notify(error.response?.data?.err || "Failed to add Expense");
+            showErrorAlert(error.response?.data?.err || "Failed to add Expense");
         }
     };
 
@@ -166,7 +188,7 @@ const AddExpance = () => {
                     </div>
                 </div>
             </div>
-            <ToastContainer />
+            {/* <ToastContainer /> */}
         </>
     );
 };

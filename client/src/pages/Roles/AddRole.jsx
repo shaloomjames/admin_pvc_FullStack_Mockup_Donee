@@ -3,15 +3,37 @@ import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import Cookies from 'js-cookie';     
 import { jwtDecode } from 'jwt-decode';  // Correct import for jwt-decode
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2'; // Import SweetAlert2_
 
 const AddRole = () => {
     const [roleName,setRoleName] = useState('');
 
     const navigate = useNavigate();
-    const notify = (error) => toast.error(error);
-    const successNotify = (success) => toast.success(success);
+    // const notify = (error) => toast.error(error);
+    // const successNotify = (success) => toast.success(success);
+
+    const showErrorAlert = (message) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: message,
+            // timer: 2000, // Automatically closes after 2 seconds
+            // showConfirmButton: false,
+        });
+    };
+
+    const showSuccessAlert = (message) => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: message,
+            timer: 2000,
+            showConfirmButton: false,
+        });
+    };
+
 
     useEffect(() => {
         const userToken = Cookies.get("UserAuthToken");
@@ -41,13 +63,13 @@ const AddRole = () => {
                 roleName
             }
             const response = await axios.post("http://localhost:5000/api/role", formData);
-            successNotify(response.data.msg);
+            showSuccessAlert(response.data.msg);
             console.log(response)
             setTimeout(() => {
                     navigate("/showrole");
-            }, 4000);
+            }, 2000);
         } catch (error) {
-            notify( error.response?.data?.err)
+            showErrorAlert( error.response?.data?.err)
         }
     }
 
@@ -79,7 +101,7 @@ const AddRole = () => {
                     </div>
                 </div>
             </div>
-            <ToastContainer/>
+            {/* <ToastContainer/> */}
         </>
     )
 }

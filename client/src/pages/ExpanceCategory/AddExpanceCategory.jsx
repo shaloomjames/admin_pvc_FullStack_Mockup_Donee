@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 import Cookies from 'js-cookie';     
 import { jwtDecode } from 'jwt-decode';  // Correct import for jwt-decode
 
@@ -12,8 +13,29 @@ const AddExpanceCategory = () => {
 
     const navigate = useNavigate();
 
-    const notify = (error) => toast.error(error);
-    const successNotify = (success) => toast.success(success);
+    // const notify = (error) => toast.error(error);
+    // const successNotify = (success) => toast.success(success);
+
+    
+    const showErrorAlert = (message) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: message,
+            // timer: 2000, // Automatically closes after 2 seconds
+            // showConfirmButton: false,
+        });
+    };
+
+    const showSuccessAlert = (message) => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: message,
+            timer: 2000,
+            showConfirmButton: false,
+        });
+    };
 
     useEffect(() => {
         const userToken = Cookies.get("UserAuthToken");
@@ -44,12 +66,12 @@ const AddExpanceCategory = () => {
         }
         try {
             const response  = await axios.post("http://localhost:5000/api/expance/category", formData);
-            successNotify(response.data.msg);
+            showSuccessAlert(response.data.msg);
             setTimeout(() => {
                     navigate("/showexpanceCategory");
-            }, 4000);
+            }, 2000);
         } catch (error) {
-            notify(error.response?.data?.err || "Failed to add Employee");
+            showErrorAlert(error.response?.data?.err || "Failed to add Employee");
         }
     }
 
@@ -84,7 +106,7 @@ const AddExpanceCategory = () => {
                     </div>
                 </div>
             </div>
-            <ToastContainer />
+            {/* <ToastContainer /> */}
         </>
     )
 }
