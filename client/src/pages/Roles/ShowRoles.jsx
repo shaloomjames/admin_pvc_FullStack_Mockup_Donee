@@ -504,7 +504,7 @@ const ShowRoles = () => {
   const deleteRole = async (roleid) => {
     Swal.fire({
       title: "Are you sure?",
-      text: "You won't be able to undo this action!",
+      text: "Are you sure you want to delete this role? This action cannot be undone, and all employees assigned to this role will be removed.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
