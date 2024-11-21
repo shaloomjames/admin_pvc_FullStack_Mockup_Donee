@@ -1,8 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2"; // Import SweetAlert2
 import Cookies from 'js-cookie';     
 import {jwtDecode} from 'jwt-decode';  // Correct import for jwt-decode
 import { useNavigate } from "react-router-dom";
@@ -11,9 +10,8 @@ const ShowExpanceCategory = () => {
   const [ExpanceCategoryData, setExpanceCategoryData] = useState([]); // Raw data
   const [search, setSearch] = useState(""); // Search query
   const [filteredData, setFilteredData] = useState([]); // Filtered data for rendering
+  const [statusFilter, setStatusFilter] = useState(""); // State to store selected status
 
-  const notify = (error) => toast.error(error);
-  const successNotify = (success) => toast.success(success);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,27 +47,46 @@ const ShowExpanceCategory = () => {
 
   useEffect(() => {
     // Filter data whenever search query or data changes
-    const filteredCategories = ExpanceCategoryData.filter((category) =>
-      (category.ExpanceCategoryName || "").toLowerCase().includes(search.toLowerCase()) ||
-      (category.ExpanceCategoryStatus || "").toLowerCase().includes(search.toLowerCase())
+    const filteredCategories = ExpanceCategoryData.filter((category) =>{
+      const matchesName = (category.ExpanceCategoryName || "").toLowerCase().includes(search.toLowerCase());
+      const matchesStatus = statusFilter ? category.ExpanceCategoryStatus  === statusFilter : true;
+      return matchesName && matchesStatus; // Both conditions must be true
+    }
+
+      // (category.ExpanceCategoryName || "").toLowerCase().includes(search.toLowerCase()) ||
+      // (category.ExpanceCategoryStatus || "").toLowerCase().includes(search.toLowerCase())
     );
     setFilteredData(filteredCategories);
-  }, [search, ExpanceCategoryData]);
+  }, [search, statusFilter, ExpanceCategoryData]);
 
 
-  const deleteExpanceCategory = async (ExpanceCategoryid) => {
-    const isConfirmed = window.confirm("Are you sure you want to delete this Expance Category?");
-    if (isConfirmed) {
+const deleteExpanceCategory = async (ExpanceCategoryid) => {
+  // SweetAlert confirmation dialog
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to undo this action!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
       try {
         const response = await axios.delete(`http://localhost:5000/api/expance/category/${ExpanceCategoryid}`);
+        // Remove the deleted category from state
         setExpanceCategoryData(ExpanceCategoryData.filter((category) => category._id !== ExpanceCategoryid));
-        successNotify(response.data.msg);
+        
+        // SweetAlert success notification
+        Swal.fire("Deleted!", response.data.msg, "success");
       } catch (error) {
-        notify(error?.response?.data?.err || "An unexpected error occurred. Please try again.");
-        console.log("Error Deleting Expance Category");
+        // SweetAlert error notification
+        Swal.fire("Error", error?.response?.data?.err || "An unexpected error occurred. Please try again.", "error");
+        console.error("Error deleting Expance Category:", error);
       }
     }
-  };
+  });
+};
 
   return (
     <>
@@ -83,14 +100,27 @@ const ShowExpanceCategory = () => {
 
         {/* Search Field */}
         <div className="row mt-3">
-          <div className="col-lg-6">
+          <div className="col-lg-5">
             <input
               type="text"
               className="form-control"
-              placeholder="Search by Category Name or Status"
+              placeholder="Search by Category Name "
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
+          </div>
+          <div className="form-group col-md-4">
+            <select
+              id="inputState"
+              className="form-control"
+              value={statusFilter} // Bind to state
+              onChange={(e) => setStatusFilter(e.target.value)} // Update statusFilter
+            >
+              <option value="" selected disabled>Search by expance category Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="">All</option>
+            </select>
           </div>
         </div>
 
@@ -141,7 +171,6 @@ const ShowExpanceCategory = () => {
           </div>
         </div>
       </div>
-      <ToastContainer />
     </>
   );
 };

@@ -338,3 +338,15 @@ export default Sidebar;
 
 
 <!-- 000000000000000000000000000000000000 768 is the width breakpoint when sidebar toggle stop working and it opens 000000000000000000000000000000000000 -->
+
+
+
+
+
+
+
+
+<!-- updates done -->
+<!-- 1) implemented sweet alert on ervery page except show page of employee -->
+<!-- 2) implemented a select dropdown to search by role status on show role page and removed search by role status from search bar -->
+<!-- 3) implemented a select dropdown to search by category status on show category page and removed search by category status from search bar -->

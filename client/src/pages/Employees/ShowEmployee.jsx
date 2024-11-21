@@ -1,8 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2"; // Import SweetAlert2
 import Cookies from "js-cookie";
 import {jwtDecode} from "jwt-decode";
 import { useNavigate } from "react-router-dom";
@@ -12,8 +11,6 @@ const ShowEmployee = () => {
   const [search, setSearch] = useState(""); // State for search query
   const [filteredData, setFilteredData] = useState([]); // Filtered employees
 
-  const notify = (error) => toast.error(error);
-  const successNotify = (success) => toast.success(success);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,18 +56,43 @@ const ShowEmployee = () => {
     setFilteredData(filteredEmployees);
   }, [search, employeeData]);
 
+  // const deleteEmployee = async (employeeid) => {
+  //   const isConfirmed = window.confirm("Are you sure you want to delete this Employee?");
+  //   if (isConfirmed) {
+  //     try {
+  //       const res = await axios.delete(`http://localhost:5000/api/employee/${employeeid}`);
+  //       setEmployeeData(employeeData.filter((employee) => employee._id !== employeeid));
+  //       successNotify(res.data.msg);
+  //     } catch (error) {
+  //       console.log("Error Deleting Employee");
+  //     }
+  //   }
+  // };
+
   const deleteEmployee = async (employeeid) => {
-    const isConfirmed = window.confirm("Are you sure you want to delete this Employee?");
-    if (isConfirmed) {
-      try {
-        const res = await axios.delete(`http://localhost:5000/api/employee/${employeeid}`);
-        setEmployeeData(employeeData.filter((employee) => employee._id !== employeeid));
-        successNotify(res.data.msg);
-      } catch (error) {
-        console.log("Error Deleting Employee");
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to undo this action!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(`http://localhost:5000/api/employee/${employeeid}`);
+          setEmployeeData(employeeData.filter((employee) => employee._id !== employeeid));
+          setFilteredData(filteredData.filter((employee) => employee._id !== employeeid));
+          Swal.fire("Deleted!", response.data.msg, "success");
+        } catch (error) {
+          Swal.fire("Error", error?.response?.data?.err || "An unexpected error occurred. Please try again.", "error");
+          console.error("Error deleting employee:", error);
+        }
       }
-    }
+    });
   };
+  
 
   return (
     <>
@@ -156,7 +178,6 @@ const ShowEmployee = () => {
           </div>
         </div>
       </div>
-      <ToastContainer />
     </>
   );
 };

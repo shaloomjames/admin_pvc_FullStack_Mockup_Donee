@@ -1,10 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+// import { ToastContainer, toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2"; // Import SweetAlert2
 import Cookies from "js-cookie";
-import {jwtDecode} from "jwt-decode"; // Correct import for jwt-decode
+import { jwtDecode } from "jwt-decode"; // Correct import for jwt-decode
 import { useNavigate } from "react-router-dom";
 
 const ShowExpance = () => {
@@ -14,8 +15,8 @@ const ShowExpance = () => {
   const [startingDate, setStartingDate] = useState(""); // Starting date filter
   const [endingDate, setEndingDate] = useState(""); // Ending date filter
 
-  const notify = (error) => toast.error(error);
-  const successNotify = (success) => toast.success(success);
+  // const notify = (error) => toast.error(error);
+  // const successNotify = (success) => toast.success(success);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,22 +50,29 @@ const ShowExpance = () => {
     fetchExpance();
   }, []);
 
-  const deleteExpance = async (expanceid) => {
-    // Show a confirmation popup before deleting
-    const isConfirmed = window.confirm("Are you sure you want to delete this Employee?");
-
-    if (isConfirmed) {
+const deleteExpance = async (expanceid) => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to undo this action!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
       try {
-        const res = await axios.delete(`http://localhost:5000/api/expance/${expanceid}`);
+        const response = await axios.delete(`http://localhost:5000/api/expance/${expanceid}`);
         setExpanceData(ExpanceData.filter((expance) => expance._id !== expanceid));
-        setTimeout(() => {
-          successNotify(res.data.msg);
-        });
+        Swal.fire("Deleted!", response.data.msg, "success");
       } catch (error) {
-        console.log("Error Deleting Expanceid");
+        Swal.fire("Error", error?.response?.data?.err || "An unexpected error occurred. Please try again.", "error");
+        console.error("Error deleting expance:", error);
       }
     }
-  };
+  });
+};
+
 
   useEffect(() => {
     const filteredExpances = ExpanceData.filter((expance) => {
@@ -177,17 +185,17 @@ const ShowExpance = () => {
                               />
                             </td> */}
                             <td>
-  <img
-    src={
-      expance.expanceImage
-        ? `/uploads/ExpanceImg/${expance.expanceImage}`
-        : `/uploads/ExpanceImg/defaultExpance.jpg` // Path to your default image
-    }
-    width={120}
-    style={{ borderRadius: "40px" }}
-    alt={expance.expanceName || "Default Expance"}
-  />
-</td>
+                              <img
+                                src={
+                                  expance.expanceImage
+                                    ? `/uploads/ExpanceImg/${expance.expanceImage}`
+                                    : `/uploads/ExpanceImg/defaultExpance.jpg` // Path to your default image
+                                }
+                                width={120}
+                                style={{ borderRadius: "40px" }}
+                                alt={expance.expanceName || "Default Expance"}
+                              />
+                            </td>
 
                             <td>{expance.expanceName}</td>
                             <td>{expance.expanceAmount}</td>
@@ -229,7 +237,7 @@ const ShowExpance = () => {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
     </>
   );
 };
