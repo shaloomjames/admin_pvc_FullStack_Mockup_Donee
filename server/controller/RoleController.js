@@ -32,7 +32,6 @@ const getActiveRole = async (req, res) => {
     }
 };
 
-
 // @Request   GET
 // @Route     http://localhost:5000/api/role/:id
 // @Access    Private
@@ -77,7 +76,6 @@ const createRole = async (req, res) => {
     }
 };
 
-
 // @Request   PUT
 // @Route     http://localhost:5000/api/role/:id
 // @Access    Private
@@ -116,21 +114,23 @@ const updateRole = async (req, res) => {
 // @Access    Private
 const deleteRole = async (req, res) => {
     try {
-        const _id = req.params.id;
+           const { id } = req.params; // Capture both roleid and rolename from URL
+        if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ err: "Invalid ID format" });
 
-        if (!mongoose.Types.ObjectId.isValid(_id)) return res.status(400).json({ err: "Invalid ID format" });
+       // Step 1: Delete employees assigned to this role
+       const deletedEmployees = await employeeModel.deleteMany({ employeeRole: id });
 
-         // Check if the role is assigned to any employee
-        const checkExistanceInUserModel = await employeeModel.findOne({ employeeRole: _id });
-        
-        // If role is in use, prevent deletion and suggest role reassignment
-        if (checkExistanceInUserModel) return res.status(400).json({ err: "Role is assigned to an employee. Please reassign the role before deletion." });
+       // If employees with this role exist, they will be deleted
+       if (deletedEmployees.deletedCount > 0) {
+         console.log(`${deletedEmployees.deletedCount} employee(s) with role ID ${id} were deleted.`);
+       } else {
+         console.log("No employees found with this role.");
+       }
 
-        const deletedRole = await roleModel.findByIdAndDelete(_id);
-
+        const deletedRole = await roleModel.findByIdAndDelete(id);
         if (!deletedRole) return res.status(404).json({ err: "Role not found" });
 
-        return res.status(200).json({ msg: "Role deleted successfully", deletedRole });
+        return res.status(200).json({ msg: "Role and associated employees deleted successfully", deletedRole });
     } catch (error) {
         console.log("Error deleting Role", error);
         return res.status(500).json({ err: "Internal Server Error", error: error.message });
