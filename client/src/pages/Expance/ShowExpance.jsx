@@ -121,7 +121,6 @@ const deleteExpance = async (expanceid) => {
               type="text"
               className="form-control"
               placeholder="Search by Category Name, Expance Name, Amount or Added By"
-              placeholder="Search by Category, Name, Amount or Added By "
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
