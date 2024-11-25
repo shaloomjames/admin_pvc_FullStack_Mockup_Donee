@@ -19,15 +19,24 @@ const ShowExpanceCategory = () => {
 
     if (userToken) {
       try {
-        const decodedToken = jwtDecode(userToken);
-        const userRole = decodedToken.userrole;
-        if (userRole !== "Admin") {
+        const decodedToken = jwtDecode(userToken); // Decode the JWT token
+        const userRole = decodedToken.userrole; // Get the user role(s)
+
+        // Check if userRole contains "Admin"
+        if (Array.isArray(userRole) && userRole.includes("Admin")) {
+          // The user has "Admin" role, allow access
+          console.log("User is an Admin");
+        } else {
+          // Redirect to login if "Admin" role is not present
           navigate("/login");
         }
       } catch (error) {
+        // If token decoding fails, redirect to login
+        console.error("Token decoding failed:", error);
         navigate("/login");
       }
     } else {
+      // If there's no token, redirect to login
       navigate("/login");
     }
   }, [navigate]);

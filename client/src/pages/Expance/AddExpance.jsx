@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
 import Cookies from 'js-cookie';     
 import { jwtDecode } from 'jwt-decode';  // Correct import for jwt-decode
 import axios from 'axios';
@@ -17,10 +15,6 @@ const AddExpance = () => {
     const [expanceCategoryData, setExpanceCategoryData] = useState([]);
 
     const navigate = useNavigate();
-
-    // const notify = (error) => toast.error(error);
-    // const successNotify = (success) => toast.success(success);
-
     
     const showErrorAlert = (message) => {
         Swal.fire({
@@ -52,42 +46,32 @@ const AddExpance = () => {
     }, []);
 
 
-    // useEffect(() => {
-
-    //     const userToken = Cookies.get("UserAuthToken");
-    //     if(userToken) {
-    //         const decodedToken = jwtDecode(userToken); 
-    //         const UserRole = decodedToken.userrole;
-    //         if(UserRole === "Admin") 
-    //     }else(
-    //         navigate("/login")
-    //     )
-    // }, []);
-
     useEffect(() => {
         const userToken = Cookies.get("UserAuthToken");
-
+    
         if (userToken) {
-            try {
-                // Decode the token
-                const decodedToken = jwtDecode(userToken); 
-
-                // Get the user role from the decoded token
-                const userRole = decodedToken.userrole;
-
-                // If user role is not Admin, redirect to login
-                if (userRole !== "Admin") {
-                    navigate("/login");
-                }
-            } catch (error) {
-                // If token decoding fails, redirect to login
-                navigate("/login");
+          try {
+            const decodedToken = jwtDecode(userToken); // Decode the JWT token
+            const userRole = decodedToken.userrole; // Get the user role(s)
+    
+            // Check if userRole contains "Admin"
+            if (Array.isArray(userRole) && userRole.includes("Admin")) {
+              // The user has "Admin" role, allow access
+              console.log("User is an Admin");
+            } else {
+              // Redirect to login if "Admin" role is not present
+              navigate("/login");
             }
-        } else {
-            // If there's no token, redirect to login
+          } catch (error) {
+            // If token decoding fails, redirect to login
+            console.error("Token decoding failed:", error);
             navigate("/login");
+          }
+        } else {
+          // If there's no token, redirect to login
+          navigate("/login");
         }
-    }, [navigate]); // This will run only once after the component mounts
+      }, [navigate]);
 
 
 
@@ -188,7 +172,6 @@ const AddExpance = () => {
                     </div>
                 </div>
             </div>
-            {/* <ToastContainer /> */}
         </>
     );
 };
